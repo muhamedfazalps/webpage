@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GNews API News Fetcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #007BFF;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+    }
+    .news-container {
+      padding: 20px;
+    }
+    .news-card {
+      background: white;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .news-card h3 {
+      margin: 0 0 10px;
+    }
+    .news-card p {
+      margin: 0 0 10px;
+    }
+    .news-card a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .news-card a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>Latest News</header>
+  <div id="news-container" class="news-container"></div>
+
+  <script>
+    async function fetchNews() {
+      const API_URL = 'http://127.0.0.1:5000/news'; // Flask backend URL
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        const data = await response.json();
+        displayNews(data.articles);
+      } catch (error) {
+        document.getElementById('news-container').innerHTML = `<p>Failed to fetch news: ${error.message}</p>`;
+        console.error('Error fetching news:', error);
+      }
+    }
+
+    function displayNews(articles) {
+      const container = document.getElementById('news-container');
+      container.innerHTML = ''; // Clear existing news
+
+      articles.forEach(article => {
+        const card = document.createElement('div');
+        card.className = 'news-card';
+        card.innerHTML = `
+          <h3>${article.title}</h3>
+          <p>${article.description || 'No description available.'}</p>
+          <a href="${article.url}" target="_blank">Read More</a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Fetch news when the page loads
+    fetchNews();
+  </script>
+</body>
+</html>
